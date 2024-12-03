@@ -33,14 +33,14 @@ public class TicketSystemConfig implements Serializable {
                 }
 
                 // Ticket Release Rate Input
-                System.out.print("Enter Ticket Release Rate (1-100 tickets/minute): ");
+                System.out.print("Enter Ticket Release Rate (1-100 tickets/second): ");
                 ticketReleaseRate = Integer.parseInt(scanner.nextLine());
                 if (ticketReleaseRate < 1 || ticketReleaseRate > 100) {
                     throw new IllegalArgumentException("Release rate must be between 1 and 100");
                 }
 
                 // Customer Retrieval Rate Input
-                System.out.print("Enter Customer Retrieval Rate (1-100 tickets/minute): ");
+                System.out.print("Enter Customer Retrieval Rate (1-100 tickets/second): ");
                 customerRetrievalRate = Integer.parseInt(scanner.nextLine());
                 if (customerRetrievalRate < 1 || customerRetrievalRate > 100) {
                     throw new IllegalArgumentException("Retrieval rate must be between 1 and 100");

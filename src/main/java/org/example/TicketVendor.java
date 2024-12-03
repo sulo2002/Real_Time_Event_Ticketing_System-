@@ -1,54 +1,43 @@
 package org.example;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 import java.util.logging.*;
 
-public class TicketVendor implements Runnable {
-    private static final Logger LOGGER = Logger.getLogger(TicketVendor.class.getName());
-
-    private final String vendorName;
-    private final TicketPool ticketPool;
+class Vendor implements Runnable {
+    private static final Logger LOGGER = Logger.getLogger(Vendor.class.getName());
+    private final String id;
+    private final TicketPool pool;
     private final int releaseRate;
-    private final Random random = new Random();
+    private final Configuration config;
+    private int ticketCount = 1;
+    private volatile boolean running = true;
 
-    public TicketVendor(String vendorName, TicketPool ticketPool, int releaseRate) {
-        this.vendorName = vendorName;
-        this.ticketPool = ticketPool;
+    public Vendor(String id, TicketPool pool, int releaseRate, Configuration config) {
+        this.id = id;
+        this.pool = pool;
         this.releaseRate = releaseRate;
+        this.config = config;
     }
 
     @Override
     public void run() {
         try {
-            while (!Thread.currentThread().isInterrupted()) {
-                // Generate tickets
-                List<Ticket> newTickets = generateTickets(releaseRate);
-
-                // Add tickets to the pool
-                boolean added = ticketPool.addTickets(newTickets);
-
-                if (added) {
-                    LOGGER.info(vendorName + " released " + newTickets.size() + " tickets.");
+            while (running && config.getRemainingTickets() > 0) {
+                int count = Math.min(releaseRate, config.getRemainingTickets());
+                if (count > 0) {
+                    for (int i = 0; i < count; i++) {
+                        pool.addTicket(id + "-Ticket-" + ticketCount++);
+                    }
+                    config.decrementRemainingTickets(count);
+                    LOGGER.info(id + " released " + count + " tickets. Remaining: " + config.getRemainingTickets());
                 }
-
-                // Sleep to simulate time between ticket releases
-                Thread.sleep(1000); // 1 second between releases
+                Thread.sleep(1000);
             }
         } catch (InterruptedException e) {
-            LOGGER.warning(vendorName + " interrupted.");
-            Thread.currentThread().interrupt();
+            LOGGER.warning(id + " interrupted");
         }
     }
 
-    private List<Ticket> generateTickets(int count) {
-        List<Ticket> tickets = new ArrayList<>();
-        for (int i = 0; i < count; i++) {
-            // Randomize ticket prices
-            double price = 50 + random.nextDouble() * 150; // Tickets between $50-$200
-            tickets.add(new Ticket("Concert Event", price));
-        }
-        return tickets;
+    public void stop() {
+        running = false;
     }
 }

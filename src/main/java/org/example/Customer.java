@@ -1,54 +1,43 @@
 package org.example;
 
-import java.util.Random;
 import java.util.logging.*;
 
-public class Customer implements Runnable {
+class Customer implements Runnable {
     private static final Logger LOGGER = Logger.getLogger(Customer.class.getName());
+    private final String id;
+    private final TicketPool pool;
+    private final int interval;
+    private int purchased = 0;
+    private volatile boolean running = true;
 
-    private final String customerName;
-    private final TicketPool ticketPool;
-    private final int retrievalRate;
-    private final Random random = new Random();
-
-    private int ticketsPurchased = 0;
-
-    public Customer(String customerName, TicketPool ticketPool, int retrievalRate) {
-        this.customerName = customerName;
-        this.ticketPool = ticketPool;
-        this.retrievalRate = retrievalRate;
+    public Customer(String id, TicketPool pool, int interval) {
+        this.id = id;
+        this.pool = pool;
+        this.interval = interval;
     }
 
     @Override
     public void run() {
         try {
-            while (!Thread.currentThread().isInterrupted()) {
-                // Attempt to purchase tickets
-                int purchaseCount = random.nextInt(retrievalRate) + 1;
-
-                for (int i = 0; i < purchaseCount; i++) {
-                    try {
-                        Ticket ticket = ticketPool.removeTicket();
-                        ticketsPurchased++;
-
-                        LOGGER.info(customerName + " purchased ticket: " + ticket);
-                    } catch (InterruptedException e) {
-                        LOGGER.warning(customerName + " interrupted during ticket purchase.");
-                        Thread.currentThread().interrupt();
-                        return;
-                    }
+            while (running) {
+                String ticket = pool.removeTicket();
+                if (ticket != null) {
+                    purchased++;
+                    LOGGER.info(id + " bought " + ticket);
                 }
-
-                // Sleep between purchase attempts
-                Thread.sleep(1500); // 1.5 seconds between purchase attempts
+                Thread.sleep(interval);
             }
         } catch (InterruptedException e) {
-            LOGGER.warning(customerName + " thread interrupted.");
-            Thread.currentThread().interrupt();
+            LOGGER.warning(id + " interrupted");
         }
     }
 
-    public int getTicketsPurchased() {
-        return ticketsPurchased;
+    public void stop() {
+        running = false;
     }
+
+    public int getPurchased() { return purchased; }
+
+    @Override
+    public String toString() { return id; }
 }

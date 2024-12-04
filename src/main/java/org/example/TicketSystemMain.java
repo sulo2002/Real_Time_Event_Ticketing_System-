@@ -26,7 +26,7 @@ public class TicketSystemMain {
 
     private static void showMenu() {
         System.out.println("""
-            === Ticket Booking System ===
+            ....Ticket Booking System.....
             1. Start System
             2. Stop System
             3. Configure System
@@ -39,16 +39,20 @@ public class TicketSystemMain {
         while (true) {
             System.out.print("Enter command: ");
             String cmd = scanner.nextLine();
-            switch (cmd) {
-                case "1" -> startSystem();
-                case "2" -> stopSystem();
-                case "3" -> configureSystem();
-                case "4" -> config.displayConfig();
-                case "5" -> {
-                    stopSystem();
-                    return;
-                }
-                default -> System.out.println("Invalid command");
+
+            if (cmd.equals("1")) {
+                startSystem();
+            } else if (cmd.equals("2")) {
+                stopSystem();
+            } else if (cmd.equals("3")) {
+                configureSystem();
+            } else if (cmd.equals("4")) {
+                config.displayConfig();
+            } else if (cmd.equals("5")) {
+                stopSystem();
+                return;
+            } else {
+                System.out.println("Invalid command");
             }
         }
     }
@@ -130,7 +134,7 @@ public class TicketSystemMain {
     }
 
     private static void configureSystem() {
-        System.out.println("\n=== System Configuration ===");
+        System.out.println("\n____System Configuration____");
         System.out.print("Total tickets: ");
         config.setTotalTickets(scanner.nextInt());
         System.out.print("Release rate/sec: ");

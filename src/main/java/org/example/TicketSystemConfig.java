@@ -39,7 +39,7 @@ class Configuration {
     }
 
     public void displayConfig() {
-        System.out.println("\n=== System Configuration ===");
+        System.out.println("\n____System Configuration____");
         System.out.println("Total Tickets: " + totalTickets);
         System.out.println("Remaining Tickets: " + remainingTickets);
         System.out.println("Release Rate/sec: " + ticketReleaseRate);

@@ -31,7 +31,9 @@ public class TicketSystemMain {
             2. Stop System
             3. Configure System
             4. Display Configuration
-            5. Exit
+            5. Save Configuration
+            6.Load Configuration
+            7.Exit
             """);
     }
 
@@ -40,21 +42,36 @@ public class TicketSystemMain {
             System.out.print("Enter command: ");
             String cmd = scanner.nextLine();
 
-            if (cmd.equals("1")) {
+            if ("1".equals(cmd)) {
                 startSystem();
-            } else if (cmd.equals("2")) {
+            } else if ("2".equals(cmd)) {
                 stopSystem();
-            } else if (cmd.equals("3")) {
+            } else if ("3".equals(cmd)) {
                 configureSystem();
-            } else if (cmd.equals("4")) {
+            } else if ("4".equals(cmd)) {
                 config.displayConfig();
-            } else if (cmd.equals("5")) {
+            } else if ("5".equals(cmd)) {
+                saveConfiguration();
+            } else if ("6".equals(cmd)) {
+                loadConfiguration();
+            } else if ("7".equals(cmd)) {
                 stopSystem();
-                return;
+                break;
             } else {
                 System.out.println("Invalid command");
             }
         }
+    }
+    private static void saveConfiguration() {
+        System.out.print("Enter filename to save configuration (e.g., config.json): ");
+        String filename = scanner.nextLine();
+        config.saveToJson(filename);
+    }
+
+    private static void loadConfiguration() {
+        System.out.print("Enter filename to load configuration (e.g., config.json): ");
+        String filename = scanner.nextLine();
+        config.loadFromJson(filename);
     }
 
     private static void startSystem() {

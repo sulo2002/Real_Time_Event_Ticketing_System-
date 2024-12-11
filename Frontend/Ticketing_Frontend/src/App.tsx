@@ -4,8 +4,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Play, Square } from 'lucide-react';
-import { useState, useEffect } from 'react';
-import './App.css'
+import { useState } from 'react';
+
+
+import './App.css' 
 
 const App = () => {
   const [totalTickets, setTotalTickets] = useState('');
@@ -14,7 +16,7 @@ const App = () => {
   const [maxCap, setMaxCap] = useState('');
   const [noVendors, setNoVendors] = useState('');
   const [noCustomers, setNoCustomers] = useState('');
-  const [systemStatus, setSystemStatus] = useState('STOPPED'); // Optional: For dynamic status
+  const [systemStatus, setSystemStatus] = useState('STOPPED');
 
   const formHandler = async (e) => {
     e.preventDefault();
@@ -29,6 +31,7 @@ const App = () => {
 
       if (response.ok) {
         alert("Form data saved successfully");
+     
       } else {
         const errorData = await response.json();
         alert(`Error: ${errorData.message}`);
@@ -39,36 +42,7 @@ const App = () => {
     }
   };
 
-  useEffect(() => {
-    // Fetch initial total tickets
-    fetch('http://localhost:8080/form/totTickets')
-      .then(response => response.text())
-      .then(data => {
-        setTotalTickets(data); // Remove formatting
-      })
-      .catch(error => console.error('Error fetching total tickets:', error));
-  }, []); // Add dependency array to avoid continuous re-renders
-
-  useEffect(() => {
-    // Fetch initial numvendors
-    fetch('http://localhost:8080/form/numvendors')
-      .then(response => response.text())
-      .then(data => {
-        setNoVendors(data); // Remove formatting
-      })
-      .catch(error => console.error('Error fetching vendors:', error));
-  }, []); // Add dependency array
-
-  useEffect(() => {
-    // Fetch initial numcustomers
-    fetch('http://localhost:8080/form/numcustomers')
-      .then(response => response.text())
-      .then(data => {
-        setNoCustomers(data); // Remove formatting
-      })
-      .catch(error => console.error('Error fetching customers:', error));
-  }, []); // Add dependency array
-
+  
   const handleStart = async () => {
     try {
       const response = await fetch('http://localhost:8080/ticketing/start', {
@@ -76,7 +50,7 @@ const App = () => {
       });
 
       if (response.ok) {
-        setSystemStatus('RUNNING'); // Update status on start
+        setSystemStatus('RUNNING');
         alert("System started");
       } else {
         const errorData = await response.json();
@@ -95,14 +69,14 @@ const App = () => {
       });
 
       if (response.ok) {
-        setSystemStatus('STOPPED'); // Update status on stop
+        setSystemStatus('STOPPED');
         alert("System stopped");
       } else {
         const errorData = await response.json();
         alert(`Error: ${errorData.message}`);
       }
     } catch (error) {
-      console.error("Error stopping system:", error);
+      console.error("Error stopping system:", error); 
       alert("An error occurred while stopping the system.");
     }
   };
@@ -218,20 +192,7 @@ const App = () => {
                         {systemStatus}
                       </span>
                     </div>
-                    <div className="flex justify-between items-center p-2 bg-slate-100 rounded">
-                      <span>Active Vendors</span>
-                      <span className="font-medium">{noVendors}</span>
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex justify-between items-center p-2 bg-slate-100 rounded">
-                      <span>Total Tickets</span>
-                      <span className="font-medium">{totalTickets}</span>
-                    </div>
-                    <div className="flex justify-between items-center p-2 bg-slate-100 rounded">
-                      <span>Active Customers</span>
-                      <span className="font-medium">{noCustomers}</span>
-                    </div>
+                   
                   </div>
                 </div>
               </CardContent>

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/ticketing")
 @CrossOrigin
 
-public class TicketingController {
+public class TicketController {
     @Autowired
     private TicketingServiceImpl ticketingService;
 

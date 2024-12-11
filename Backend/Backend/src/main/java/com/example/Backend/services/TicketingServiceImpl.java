@@ -1,4 +1,6 @@
 package com.example.Backend.services;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
 import com.example.Backend.components.Ticketpool;
@@ -13,8 +15,8 @@ import com.example.Backend.components.Customer;
 public class TicketingServiceImpl implements TicketingService {
     private static final Logger logger = Logger.getLogger(TicketingServiceImpl.class.getName());
     private boolean systemRunning = false;
-    private Thread[] vendorThreads;
-    private Thread[] customerThreads;
+    private List<Thread> vendorThreads = new ArrayList<>();
+    private List<Thread> customerThreads = new ArrayList<>();
 
     @Autowired
     private ConfigServiceImpl configService;
@@ -22,7 +24,13 @@ public class TicketingServiceImpl implements TicketingService {
     @Autowired
     private Ticketpool ticketpool;
 
-    public void userStart() {
+    @Autowired
+    private Vendor vendorComponent;
+
+    @Autowired
+    private Customer customerComponent;
+
+    public void startSystem() {
         if (systemRunning) {
             logger.info("System is already running.");
             return;
@@ -35,25 +43,22 @@ public class TicketingServiceImpl implements TicketingService {
         }
 
         configService.setRemainingTickets(currentConfig.getTotalTickets());
-
-
         ticketpool.init(currentConfig.getMaxCap(), currentConfig.getTotalTickets());
-
 
         int ratePerVendor = Math.max(1, currentConfig.getReleaseRate() / currentConfig.getNoVendors());
 
-        vendorThreads = new Thread[currentConfig.getNoVendors()];
-        customerThreads = new Thread[currentConfig.getNoCustomers()];
-
-
         for (int i = 0; i < currentConfig.getNoVendors(); i++) {
-            vendorThreads[i] = new Thread(new Vendor(ticketpool, ratePerVendor, i + 1, configService));
-            vendorThreads[i].start();
+            Vendor vendor = new Vendor(ticketpool, ratePerVendor, i + 1, configService);
+            Thread vendorThread = new Thread(vendor);
+            vendorThreads.add(vendorThread);
+            vendorThread.start();
         }
 
         for (int i = 0; i < currentConfig.getNoCustomers(); i++) {
-            customerThreads[i] = new Thread(new Customer(ticketpool, 1000 / currentConfig.getRetrievalRate(), i + 1));
-            customerThreads[i].start();
+            Customer customer = new Customer(ticketpool, 1000 / currentConfig.getRetrievalRate(), i + 1);
+            Thread customerThread = new Thread(customer);
+            customerThreads.add(customerThread);
+            customerThread.start();
         }
 
         systemRunning = true;
@@ -75,28 +80,23 @@ public class TicketingServiceImpl implements TicketingService {
             return;
         }
 
-        if (vendorThreads != null) {
-            for (Thread thread : vendorThreads) {
-                if (thread != null && thread.isAlive()) {
-                    thread.interrupt();
-                }
+        for (Thread thread : vendorThreads) {
+            if (thread != null && thread.isAlive()) {
+                thread.interrupt();
             }
         }
 
-        if (customerThreads != null) {
-            for (Thread thread : customerThreads) {
-                if (thread != null && thread.isAlive()) {
-                    thread.interrupt();
-                }
+        for (Thread thread : customerThreads) {
+            if (thread != null && thread.isAlive()) {
+                thread.interrupt();
             }
         }
 
         systemRunning = false;
-        ticketpool = null;
-        vendorThreads = null;
-        customerThreads = null;
+        ticketpool.stopSystem();
+        vendorThreads.clear();
+        customerThreads.clear();
 
         logger.info("System stopped successfully.");
     }
-
 }

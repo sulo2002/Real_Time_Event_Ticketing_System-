@@ -6,15 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/configure")
+@RequestMapping("/form")
 @CrossOrigin
 public class ConfigController {
     @Autowired
     private ConfigServiceImpl configService;
 
-    private  static Config config;
-
-    @PostMapping("/add")
+    @PostMapping("/insert")
     public String addConfig(@RequestBody Config config) {
         configService.saveConfiguration(config);
         return "Success";
@@ -27,6 +25,24 @@ public class ConfigController {
         } else {
             return 0;
         }
-    }
 
+    }
+    @GetMapping("/numvendors")
+    public int numvendors() {
+        Config config = configService.getLatestConfig(); // Assuming you have a method to fetch the latest config
+        if (config != null) {
+            return config.getNoVendors();
+        } else {
+            return 0;
+        }
+    }
+    @GetMapping("/numcustomers")
+    public int numcustomers() {
+        Config config = configService.getLatestConfig(); // Assuming you have a method to fetch the latest config
+        if (config != null) {
+            return config.getNoCustomers();
+        } else {
+            return 0;
+        }
+    }
 }

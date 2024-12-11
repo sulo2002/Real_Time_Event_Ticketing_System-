@@ -16,7 +16,7 @@ public class TicketController {
     @PostMapping("/start")
     @ResponseBody
     public void startSys() {
-        ticketingService.userStart();
+        ticketingService.startSystem();
     }
     @PostMapping("/stop")
     @ResponseBody
@@ -25,4 +25,5 @@ public class TicketController {
     }
 
 }
+
 

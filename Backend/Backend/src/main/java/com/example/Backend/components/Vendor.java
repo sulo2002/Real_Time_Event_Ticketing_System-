@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 
 import com.example.Backend.services.ConfigServiceImpl;
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -14,13 +15,16 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Scope("prototype")
+
 public class Vendor implements Runnable {
     private static final Logger logger = Logger.getLogger(Vendor.class.getName());
-    private final Ticketpool ticketPool;
-    private final int releaseRate;
-    private final int vendorId;
-    private final ConfigServiceImpl configService;
+    private  Ticketpool ticketPool;
+    private  int releaseRate;
+    private  int vendorId;
+    private  ConfigServiceImpl configService;
 
+
+    public Vendor(){}
     public Vendor(Ticketpool ticketpool, int releaseRate, int vendorId, ConfigServiceImpl configService) {
         this.ticketPool = ticketpool;
         this.releaseRate = releaseRate;
@@ -51,3 +55,4 @@ public class Vendor implements Runnable {
         }
     }
 }
+

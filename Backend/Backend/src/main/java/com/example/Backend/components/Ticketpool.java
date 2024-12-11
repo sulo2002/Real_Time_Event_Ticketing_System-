@@ -20,7 +20,7 @@ public class Ticketpool {
     private volatile boolean isSystemRunning = true;
     private int totalSoldTickets = 0;
     private int totalTickets;
-    @Autowired
+
     private ConfigServiceImpl configService;
 
     public void init(int maxCap, int totalTickets) {
